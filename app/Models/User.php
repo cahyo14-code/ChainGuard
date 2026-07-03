@@ -46,4 +46,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // 1 user punya banyak watchlist
+    public function watchlists()
+    {
+        return $this->hasMany(Watchlist::class);
+    }
+
+    // 1 user (admin) bisa punya banyak artikel
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
 }
