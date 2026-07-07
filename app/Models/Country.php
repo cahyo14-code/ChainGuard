@@ -7,20 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Country extends Model
 {
     protected $fillable = [
-        'code',
-        'name',
-        'capital',
-        'region',
-        'subregion',
-        'currency_code',
-        'currency_name',
-        'flag_url',
-        'population',
-        'latitude',
-        'longitude',
-    ];
+    'code',
+    'name',
+    'capital',
+    'currency_code',
+    'currency_name',
+    'flag_url',
+    'population',
+    'region',
+    'subregion',
+    'latitude',
+    'longitude',
+];
 
-    // 1 negara punya banyak data ekonomi
+
     public function economicIndicators()
     {
         return $this->hasMany(EconomicIndicator::class);
