@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NewsCache extends Model
 {
+    protected $table = 'news_cache';
     protected $fillable = [
         'country_id',
         'title',
