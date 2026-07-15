@@ -1,73 +1,57 @@
-@extends('layouts.app')
+@extends('layouts.auth')
+
+@section('title', 'Login')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
+<h5 style="color: var(--text-primary); margin-bottom: 20px; text-align: center;">
+    <i class="fas fa-lock" style="color: var(--accent-light);"></i> Masuk ke Sistem
+</h5>
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+@if($errors->any())
+    <div style="background: rgba(220,53,69,0.1); border: 1px solid #dc3545; border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+        @foreach($errors->all() as $error)
+            <small style="color: #dc3545;">{{ $error }}</small><br>
+        @endforeach
     </div>
-</div>
+@endif
+
+<form method="POST" action="{{ route('login') }}">
+    @csrf
+
+    <div class="mb-3">
+        <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: 6px; display: block;">
+            Email Address
+        </label>
+        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+            class="form-control-custom" style="width: 100%;"
+            placeholder="Masukkan email">
+    </div>
+
+    <div class="mb-4">
+        <label style="color: var(--text-secondary); font-size: 13px; margin-bottom: 6px; display: block;">
+            Password
+        </label>
+        <input type="password" name="password" required
+            class="form-control-custom" style="width: 100%;"
+            placeholder="Masukkan password">
+    </div>
+
+    <div class="mb-3 d-flex align-items-center justify-content-between">
+        <label style="color: var(--text-secondary); font-size: 13px; cursor: pointer;">
+            <input type="checkbox" name="remember"> Remember Me
+        </label>
+        @if(Route::has('password.request'))
+            <a href="{{ route('password.request') }}" style="color: var(--accent-light); font-size: 13px;">
+                Lupa Password?
+            </a>
+        @endif
+    </div>
+
+    <button type="submit" class="btn-accent" style="width: 100%;">
+        <i class="fas fa-sign-in-alt"></i> Login
+    </button>
+
+</form>
+
 @endsection

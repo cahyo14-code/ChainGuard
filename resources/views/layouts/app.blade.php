@@ -1,80 +1,128 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <title>ChainGuard - @yield('title', 'Global Supply Chain Risk Monitor')</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    @stack('styles')
 </head>
 <body>
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h4>⛓ CHAINGUARD</h4>
+            <span>Supply Chain Risk Monitor</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <p class="nav-section-title">Main Menu</p>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('dashboard') }}" class="nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
             </div>
-        </nav>
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+            <div class="nav-item-custom">
+                <a href="{{ route('countries.index') }}" class="nav-link-custom {{ request()->routeIs('countries.*') ? 'active' : '' }}">
+                    <i class="fas fa-globe"></i> Global Countries
+                </a>
+            </div>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('risk.index') }}" class="nav-link-custom {{ request()->routeIs('risk.*') ? 'active' : '' }}">
+                    <i class="fas fa-exclamation-triangle"></i> Risk Scoring
+                </a>
+            </div>
+
+            <p class="nav-section-title">Monitoring</p>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('weather.index') }}" class="nav-link-custom {{ request()->routeIs('weather.*') ? 'active' : '' }}">
+                    <i class="fas fa-cloud-sun"></i> Weather Monitor
+                </a>
+            </div>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('currency.index') }}" class="nav-link-custom {{ request()->routeIs('currency.*') ? 'active' : '' }}">
+                    <i class="fas fa-dollar-sign"></i> Currency Impact
+                </a>
+            </div>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('news.index') }}" class="nav-link-custom {{ request()->routeIs('news.*') ? 'active' : '' }}">
+                    <i class="fas fa-newspaper"></i> News Intelligence
+                </a>
+            </div>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('ports.index') }}" class="nav-link-custom {{ request()->routeIs('ports.*') ? 'active' : '' }}">
+                    <i class="fas fa-anchor"></i> Port Locations
+                </a>
+            </div>
+
+            <p class="nav-section-title">Tools</p>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('watchlist.index') }}" class="nav-link-custom {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
+                    <i class="fas fa-star"></i> Watchlist
+                </a>
+            </div>
+
+            <div class="nav-item-custom">
+                <a href="{{ route('countries.compare') }}" class="nav-link-custom {{ request()->routeIs('countries.compare') ? 'active' : '' }}">
+                    <i class="fas fa-balance-scale"></i> Compare Countries
+                </a>
+            </div>
+
+            @if(auth()->user())
+            <p class="nav-section-title">Admin</p>
+            <div class="nav-item-custom">
+                <a href="{{ route('admin.index') }}" class="nav-link-custom {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> Admin Panel
+                </a>
+            </div>
+            @endif
+        </nav>
     </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+            <div class="d-flex align-items-center gap-3">
+                <span style="color: var(--text-secondary); font-size: 13px;">
+                    <i class="fas fa-circle text-success" style="font-size: 8px;"></i>
+                    System Online
+                </span>
+                <span style="color: var(--text-secondary); font-size: 13px;">
+                    <i class="fas fa-user"></i>
+                    {{ auth()->user()->name ?? 'Guest' }}
+                </span>
+                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" style="background: none; border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            @yield('content')
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    @stack('scripts')
 </body>
 </html>
