@@ -53,7 +53,17 @@ class CountryController extends Controller
 
     public function compare()
     {
-        $countries = Country::orderBy('name')->get(['id', 'code', 'name']);
-        return view('countries.compare', compact('countries'));
+        // semua negara untuk dropdown pilihan (dengan flag & currency)
+        $countries = Country::orderBy('name')
+            ->get(['id', 'code', 'name', 'flag_url', 'currency_code', 'region']);
+
+        // negara yang sudah dipilih via query string (?a=ID&b=DE)
+        $codeA = strtoupper(request('a', ''));
+        $codeB = strtoupper(request('b', ''));
+
+        $countryA = $codeA ? Country::where('code', $codeA)->first() : null;
+        $countryB = $codeB ? Country::where('code', $codeB)->first() : null;
+
+        return view('countries.compare', compact('countries', 'countryA', 'countryB', 'codeA', 'codeB'));
     }
 }

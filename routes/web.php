@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\CurrencyApiController;
 use App\Http\Controllers\Api\RiskApiController;
 use App\Http\Controllers\Api\NewsApiController;
 use App\Http\Controllers\Api\PortApiController;
+use App\Http\Controllers\Api\CompareApiController;
 
 // Auth routes
 Auth::routes();
@@ -79,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Ports API
         Route::get('/ports', [PortApiController::class, 'index'])->name('ports.index');
+
+        // Compare API
+        Route::get('/compare', [CompareApiController::class, 'compare'])->name('compare');
     });
 });
 
