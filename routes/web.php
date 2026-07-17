@@ -59,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/articles', [AdminController::class, 'storeArticle'])->name('admin.articles.store');
     Route::delete('/admin/articles/{article}', [AdminController::class, 'destroyArticle'])->name('admin.articles.destroy');
     Route::patch('/admin/articles/{article}/status', [AdminController::class, 'updateArticleStatus'])->name('admin.articles.status');
+    Route::get('/admin/data-status', [AdminController::class, 'dataStatus'])->name('admin.data.status');
+    Route::post('/admin/refresh', [AdminController::class, 'refresh'])->name('admin.refresh');
 
     // =========================================================
     // REST API Routes (JSON — dipakai oleh AJAX & Chart.js)

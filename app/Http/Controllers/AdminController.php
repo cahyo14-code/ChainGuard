@@ -8,8 +8,16 @@ use App\Models\Country;
 use App\Models\Port;
 use App\Models\NewsCache;
 use App\Models\RiskScore;
+use App\Models\WeatherData;
+use App\Models\CurrencyRate;
+use App\Services\WeatherService;
+use App\Services\ExchangeRateService;
+use App\Services\NewsService;
+use App\Services\SentimentService;
+use App\Services\RiskScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
 
 class AdminController extends Controller
 {
@@ -56,7 +64,84 @@ class AdminController extends Controller
         ));
     }
 
+    // ── Data Status (untuk panel refresh) ─────────────────────
+    public function dataStatus()
+    {
+        $latestWeather  = WeatherData::max('fetched_at');
+        $latestCurrency = CurrencyRate::max('fetched_at');
+        $latestNews     = NewsCache::max('fetched_at');
+        $latestRisk     = RiskScore::max('calculated_at');
+
+        return response()->json([
+            'weather'  => [
+                'last_update' => $latestWeather  ? \Carbon\Carbon::parse($latestWeather)->diffForHumans()  : 'Belum pernah',
+                'count'       => WeatherData::count(),
+            ],
+            'currency' => [
+                'last_update' => $latestCurrency ? \Carbon\Carbon::parse($latestCurrency)->diffForHumans() : 'Belum pernah',
+                'count'       => CurrencyRate::count(),
+            ],
+            'news'     => [
+                'last_update' => $latestNews     ? \Carbon\Carbon::parse($latestNews)->diffForHumans()     : 'Belum pernah',
+                'count'       => NewsCache::count(),
+            ],
+            'risk'     => [
+                'last_update' => $latestRisk     ? \Carbon\Carbon::parse($latestRisk)->diffForHumans()     : 'Belum pernah',
+                'count'       => RiskScore::count(),
+            ],
+        ]);
+    }
+
+    // ── Manual Refresh (trigger fetch via AJAX) ────────────────
+    public function refresh(Request $request)
+    {
+        $type = $request->input('type');
+
+        $allowed = ['weather', 'currency', 'news', 'risk', 'all'];
+        if (!in_array($type, $allowed)) {
+            return response()->json(['status' => 'error', 'message' => 'Tipe tidak valid.'], 422);
+        }
+
+        try {
+            switch ($type) {
+                case 'weather':
+                    Artisan::call('chainguard:fetch-weather');
+                    $msg = 'Data cuaca berhasil diperbarui.';
+                    break;
+
+                case 'currency':
+                    Artisan::call('chainguard:fetch-currency');
+                    $msg = 'Kurs mata uang berhasil diperbarui.';
+                    break;
+
+                case 'news':
+                    Artisan::call('chainguard:fetch-news');
+                    $msg = 'Berita berhasil diperbarui + sentimen dianalisis.';
+                    break;
+
+                case 'risk':
+                    Artisan::call('chainguard:calculate-risk');
+                    $msg = 'Risk score berhasil dihitung ulang.';
+                    break;
+
+                case 'all':
+                    Artisan::call('chainguard:fetch-currency');
+                    Artisan::call('chainguard:fetch-weather');
+                    Artisan::call('chainguard:fetch-news');
+                    Artisan::call('chainguard:calculate-risk');
+                    $msg = 'Semua data berhasil diperbarui.';
+                    break;
+            }
+
+            return response()->json(['status' => 'success', 'message' => $msg]);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Gagal: ' . $e->getMessage()], 500);
+        }
+    }
+
     // ── User Management ────────────────────────────────────────
+
     public function storeUser(Request $request)
     {
         $request->validate([

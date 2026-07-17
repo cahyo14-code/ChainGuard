@@ -13,6 +13,60 @@
 .stat-card .value { font-size:28px; font-weight:700; color:var(--text-primary); }
 .admin-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:20px; margin-bottom:20px; }
 .admin-card h5 { color:var(--text-primary); font-size:15px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:10px; }
+
+/* Data Refresh Panel */
+.refresh-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.refresh-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.refresh-item:last-child { border-bottom: none; }
+.refresh-item .info { flex: 1; min-width: 180px; }
+.refresh-item .info .name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+.refresh-item .info .meta { font-size: 12px; color: var(--text-secondary); }
+.refresh-item .status-badge {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    font-weight: 600; white-space: nowrap;
+}
+.status-fresh   { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.status-stale   { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+.status-unknown { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+.btn-refresh {
+    background: var(--accent-soft); border: 1px solid var(--accent);
+    color: var(--accent); padding: 6px 14px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-refresh:hover { background: var(--accent); color: white; }
+.btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-refresh-all {
+    background: var(--accent); border: none; color: white;
+    padding: 10px 22px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(91,110,245,0.3);
+}
+.btn-refresh-all:hover { background: var(--accent-light); transform: translateY(-1px); }
+.btn-refresh-all:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.progress-bar-refresh {
+    height: 3px; border-radius: 2px;
+    background: var(--border-color); overflow: hidden; margin-top: 6px;
+}
+.progress-bar-fill-refresh {
+    height: 100%; background: var(--accent);
+    border-radius: 2px; width: 0%;
+    transition: width 0.4s ease;
+}
 .form-input {
     background:var(--bg-secondary); border:1px solid var(--border-color);
     color:var(--text-primary); border-radius:8px; padding:9px 12px;
@@ -83,6 +137,139 @@
         </div>
     </div>
     @endforeach
+</div>
+
+{{-- ═══════════════════════════════════════════════════════ --}}
+{{-- PANEL: Real-Time Data Refresh                          --}}
+{{-- ═══════════════════════════════════════════════════════ --}}
+<div class="refresh-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 style="margin:0; color:var(--text-primary); font-size:15px;">
+                🔄 Real-Time Data Refresh
+            </h5>
+            <small style="color:var(--text-secondary)">Update data dari API eksternal secara manual atau otomatis via scheduler</small>
+        </div>
+        <button class="btn-refresh-all" id="refreshAllBtn" onclick="refreshData('all')">
+            <i class="fas fa-sync-alt"></i> Refresh Semua
+        </button>
+    </div>
+
+    {{-- Global progress bar --}}
+    <div class="progress-bar-refresh" id="globalProgress" style="display:none">
+        <div class="progress-bar-fill-refresh" id="globalProgressFill"></div>
+    </div>
+
+    {{-- Alert area --}}
+    <div id="refreshAlert" style="display:none; margin-top:10px; padding:10px 14px; border-radius:8px; font-size:13px;"></div>
+
+    {{-- Data items --}}
+    <div style="margin-top:16px;">
+
+        {{-- Cuaca --}}
+        <div class="refresh-item" id="item-weather">
+            <div class="d-flex align-items-center gap-12" style="gap:12px">
+                <div style="width:38px; height:38px; background:#e0f2fe; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+                    🌦
+                </div>
+                <div class="info">
+                    <div class="name">Data Cuaca</div>
+                    <div class="meta">
+                        Open-Meteo API · Update setiap <strong>1 jam</strong><br>
+                        <span id="weather-count">—</span> negara ·
+                        Terakhir: <span id="weather-last">memuat...</span>
+                    </div>
+                    <div class="progress-bar-refresh" id="progress-weather"><div class="progress-bar-fill-refresh" id="fill-weather"></div></div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="gap:8px">
+                <span class="status-badge status-unknown" id="badge-weather">—</span>
+                <button class="btn-refresh" id="btn-weather" onclick="refreshData('weather')">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        {{-- Kurs --}}
+        <div class="refresh-item" id="item-currency">
+            <div class="d-flex align-items-center" style="gap:12px">
+                <div style="width:38px; height:38px; background:#ede9fe; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+                    💱
+                </div>
+                <div class="info">
+                    <div class="name">Kurs Mata Uang</div>
+                    <div class="meta">
+                        ExchangeRate API · Update setiap <strong>6 jam</strong><br>
+                        <span id="currency-count">—</span> mata uang ·
+                        Terakhir: <span id="currency-last">memuat...</span>
+                    </div>
+                    <div class="progress-bar-refresh" id="progress-currency"><div class="progress-bar-fill-refresh" id="fill-currency"></div></div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center" style="gap:8px">
+                <span class="status-badge status-unknown" id="badge-currency">—</span>
+                <button class="btn-refresh" id="btn-currency" onclick="refreshData('currency')">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        {{-- Berita --}}
+        <div class="refresh-item" id="item-news">
+            <div class="d-flex align-items-center" style="gap:12px">
+                <div style="width:38px; height:38px; background:#fce7f3; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+                    📰
+                </div>
+                <div class="info">
+                    <div class="name">Berita & Sentimen</div>
+                    <div class="meta">
+                        GNews API · Update setiap <strong>3 jam</strong><br>
+                        <span id="news-count">—</span> berita ·
+                        Terakhir: <span id="news-last">memuat...</span>
+                    </div>
+                    <div class="progress-bar-refresh" id="progress-news"><div class="progress-bar-fill-refresh" id="fill-news"></div></div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center" style="gap:8px">
+                <span class="status-badge status-unknown" id="badge-news">—</span>
+                <button class="btn-refresh" id="btn-news" onclick="refreshData('news')">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        {{-- Risk Score --}}
+        <div class="refresh-item" id="item-risk">
+            <div class="d-flex align-items-center" style="gap:12px">
+                <div style="width:38px; height:38px; background:#fee2e2; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+                    ⚠️
+                </div>
+                <div class="info">
+                    <div class="name">Risk Score</div>
+                    <div class="meta">
+                        Weighted Algorithm · Dihitung ulang setiap <strong>1 jam (jam:30)</strong><br>
+                        <span id="risk-count">—</span> negara dinilai ·
+                        Terakhir: <span id="risk-last">memuat...</span>
+                    </div>
+                    <div class="progress-bar-refresh" id="progress-risk"><div class="progress-bar-fill-refresh" id="fill-risk"></div></div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center" style="gap:8px">
+                <span class="status-badge status-unknown" id="badge-risk">—</span>
+                <button class="btn-refresh" id="btn-risk" onclick="refreshData('risk')">
+                    <i class="fas fa-sync-alt"></i> Hitung Ulang
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="margin-top:14px; padding:10px 14px; background:#f8fafc; border-radius:8px; font-size:12px; color:var(--text-secondary);">
+        <i class="fas fa-info-circle" style="color:var(--accent)"></i>
+        <strong>Scheduler otomatis</strong> berjalan di background. Jalankan
+        <code style="background:#e2e8f0; padding:1px 6px; border-radius:4px;">php artisan schedule:work</code>
+        di terminal untuk mengaktifkan scheduler saat development.
+    </div>
 </div>
 
 {{-- Tab Navigation --}}
@@ -336,13 +523,173 @@
 
 @push('scripts')
 <script>
+// ── Tab switching ──────────────────────────────────────────────
 function switchTab(name, btn) {
-    // sembunyikan semua tab
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    // tampilkan tab yang dipilih
     document.getElementById('tab-' + name).classList.add('active');
     btn.classList.add('active');
 }
+
+// ── Data Refresh Panel ─────────────────────────────────────────
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+// Label & icon per tipe
+const TYPE_META = {
+    weather:  { label: 'Data Cuaca',       icon: '🌦' },
+    currency: { label: 'Kurs Mata Uang',   icon: '💱' },
+    news:     { label: 'Berita & Sentimen',icon: '📰' },
+    risk:     { label: 'Risk Score',       icon: '⚠️' },
+    all:      { label: 'Semua Data',       icon: '🔄' },
+};
+
+// Load status awal saat halaman dibuka
+document.addEventListener('DOMContentLoaded', loadDataStatus);
+
+async function loadDataStatus() {
+    try {
+        const res  = await fetch('{{ route("admin.data.status") }}', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        });
+        const data = await res.json();
+
+        updateStatusUI('weather',  data.weather);
+        updateStatusUI('currency', data.currency);
+        updateStatusUI('news',     data.news);
+        updateStatusUI('risk',     data.risk);
+    } catch (e) {
+        console.error('Gagal load status:', e);
+    }
+}
+
+function updateStatusUI(type, info) {
+    const lastEl  = document.getElementById(`${type}-last`);
+    const countEl = document.getElementById(`${type}-count`);
+    const badge   = document.getElementById(`badge-${type}`);
+
+    if (lastEl)  lastEl.textContent  = info.last_update ?? '—';
+    if (countEl) countEl.textContent = info.count ? info.count.toLocaleString('id-ID') : '0';
+
+    // tentukan status badge
+    if (badge) {
+        const text = info.last_update ?? '';
+        if (text === 'Belum pernah' || text === '—') {
+            badge.textContent = 'Belum ada data';
+            badge.className   = 'status-badge status-unknown';
+        } else if (text.includes('detik') || text.includes('menit') || text.includes('1 jam')) {
+            badge.textContent = '● Fresh';
+            badge.className   = 'status-badge status-fresh';
+        } else {
+            badge.textContent = '○ Perlu update';
+            badge.className   = 'status-badge status-stale';
+        }
+    }
+}
+
+// ── Trigger refresh ────────────────────────────────────────────
+let isRefreshing = false;
+
+async function refreshData(type) {
+    if (isRefreshing) return;
+    isRefreshing = true;
+
+    const meta    = TYPE_META[type] || { label: type, icon: '🔄' };
+    const allBtns = document.querySelectorAll('.btn-refresh, .btn-refresh-all');
+    const progBar = document.getElementById(`progress-${type}`);
+    const fill    = document.getElementById(`fill-${type}`);
+    const globalProg = document.getElementById('globalProgress');
+    const globalFill = document.getElementById('globalProgressFill');
+    const alertEl    = document.getElementById('refreshAlert');
+
+    // Disable semua tombol
+    allBtns.forEach(b => { b.disabled = true; });
+
+    // Tampilkan progress bar
+    if (type === 'all') {
+        globalProg.style.display = 'block';
+        animateProgress(globalFill, 90, 8000);
+    } else if (progBar && fill) {
+        progBar.style.display = 'block';
+        animateProgress(fill, 90, 5000);
+    }
+
+    // Sembunyikan alert lama
+    alertEl.style.display = 'none';
+
+    // Update badge jadi "Memuat..."
+    const badge = document.getElementById(`badge-${type}`);
+    if (badge) { badge.textContent = '⟳ Memuat...'; badge.className = 'status-badge status-unknown'; }
+    if (type === 'all') {
+        ['weather','currency','news','risk'].forEach(t => {
+            const b = document.getElementById(`badge-${t}`);
+            if (b) { b.textContent = '⟳ Memuat...'; b.className = 'status-badge status-unknown'; }
+        });
+    }
+
+    try {
+        const res  = await fetch('{{ route("admin.refresh") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept':       'application/json',
+                'X-CSRF-TOKEN': CSRF,
+            },
+            body: JSON.stringify({ type }),
+        });
+        const data = await res.json();
+
+        // Selesaikan progress
+        if (type === 'all') {
+            globalFill.style.width = '100%';
+            setTimeout(() => { globalProg.style.display = 'none'; globalFill.style.width = '0%'; }, 600);
+        } else if (fill) {
+            fill.style.width = '100%';
+            setTimeout(() => { progBar.style.display = 'none'; fill.style.width = '0%'; }, 600);
+        }
+
+        if (data.status === 'success') {
+            showAlert('success', `${meta.icon} ${data.message}`);
+        } else {
+            showAlert('error', `❌ ${data.message}`);
+        }
+
+        // Reload status setelah refresh
+        await loadDataStatus();
+
+    } catch (e) {
+        showAlert('error', `❌ Koneksi gagal. Pastikan server Laravel berjalan.`);
+        if (fill) { fill.style.width = '0%'; }
+        if (globalFill) { globalFill.style.width = '0%'; }
+    } finally {
+        allBtns.forEach(b => { b.disabled = false; });
+        isRefreshing = false;
+    }
+}
+
+// ── Progress bar animasi ───────────────────────────────────────
+function animateProgress(el, targetPct, durationMs) {
+    let current = 0;
+    const step  = targetPct / (durationMs / 50);
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= targetPct) { current = targetPct; clearInterval(timer); }
+        el.style.width = current + '%';
+    }, 50);
+}
+
+// ── Alert helper ───────────────────────────────────────────────
+function showAlert(type, msg) {
+    const el = document.getElementById('refreshAlert');
+    el.style.display   = 'block';
+    el.style.background = type === 'success' ? '#dcfce7' : '#fee2e2';
+    el.style.border     = `1px solid ${type === 'success' ? '#bbf7d0' : '#fecaca'}`;
+    el.style.color      = type === 'success' ? '#15803d' : '#b91c1c';
+    el.innerHTML        = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+    // auto hide setelah 6 detik
+    setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+
+// ── Auto-refresh status setiap 2 menit ────────────────────────
+setInterval(loadDataStatus, 120000);
 </script>
 @endpush
