@@ -10,6 +10,11 @@ use App\Http\Controllers\PortController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Api\CountryApiController;
+use App\Http\Controllers\Api\CurrencyApiController;
+use App\Http\Controllers\Api\RiskApiController;
+use App\Http\Controllers\Api\NewsApiController;
+use App\Http\Controllers\Api\PortApiController;
 
 // Auth routes
 Auth::routes();
@@ -48,6 +53,33 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+
+    // =========================================================
+    // REST API Routes (JSON — dipakai oleh AJAX & Chart.js)
+    // =========================================================
+    Route::prefix('api')->name('api.')->group(function () {
+
+        // Countries API
+        Route::get('/countries', [CountryApiController::class, 'index'])->name('countries.index');
+        Route::get('/countries/{code}', [CountryApiController::class, 'show'])->name('countries.show');
+
+        // Currency API
+        Route::get('/currency', [CurrencyApiController::class, 'index'])->name('currency.index');
+        Route::get('/currency/compare', [CurrencyApiController::class, 'compare'])->name('currency.compare');
+        Route::get('/currency/{code}', [CurrencyApiController::class, 'history'])->name('currency.history');
+
+        // Risk API
+        Route::get('/risk', [RiskApiController::class, 'index'])->name('risk.index');
+        Route::get('/risk/distribution', [RiskApiController::class, 'distribution'])->name('risk.distribution');
+        Route::get('/risk/top', [RiskApiController::class, 'top'])->name('risk.top');
+        Route::get('/risk/{code}', [RiskApiController::class, 'show'])->name('risk.show');
+
+        // News API
+        Route::get('/news', [NewsApiController::class, 'index'])->name('news.index');
+
+        // Ports API
+        Route::get('/ports', [PortApiController::class, 'index'])->name('ports.index');
+    });
 });
 
 // Redirect root ke dashboard
