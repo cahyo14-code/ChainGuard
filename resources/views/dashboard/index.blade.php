@@ -99,7 +99,7 @@
                 <h2 style="font-size: 16px;">📰 Berita Terbaru</h2>
             </div>
             @foreach($latestNews as $news)
-            <div style="border-bottom: 1px solid rgba(40,98,58,0.2); padding: 10px 0;">
+            <div style="border-bottom: 1px solid var(--border-color); padding: 10px 0;">
                 <div style="font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">
                     {{ Str::limit($news->title, 70) }}
                 </div>
@@ -128,7 +128,7 @@
                 <p style="color: var(--text-secondary); font-size: 13px;">Tidak ada cuaca ekstrem saat ini</p>
             @else
                 @foreach($extremeWeather as $weather)
-                <div style="border-bottom: 1px solid rgba(40,98,58,0.2); padding: 10px 0;">
+                <div style="border-bottom: 1px solid var(--border-color); padding: 10px 0;">
                     <div style="font-size: 13px; color: var(--text-primary);">
                         {{ $weather->country->name ?? '-' }}
                     </div>

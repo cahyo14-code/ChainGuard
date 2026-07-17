@@ -96,7 +96,7 @@
         color: var(--text-secondary);
     }
     .rate-row:hover {
-        background: rgba(40,98,58,0.08) !important;
+        background: #f8fafc !important;
     }
 </style>
 @endpush
@@ -365,13 +365,13 @@ function renderChart(labels, rates, countryName, currency) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    labels: { color: '#a8c5b5', font: { size: 12 } }
+                    labels: { color: '#718096', font: { size: 12 } }
                 },
                 tooltip: {
-                    backgroundColor: '#162830',
-                    titleColor: '#ffffff',
-                    bodyColor: '#a8c5b5',
-                    borderColor: '#28623A',
+                    backgroundColor: '#ffffff',
+                    titleColor: '#2d3748',
+                    bodyColor: '#718096',
+                    borderColor: '#e2e8f0',
                     borderWidth: 1,
                     callbacks: {
                         label: ctx =>
@@ -381,16 +381,16 @@ function renderChart(labels, rates, countryName, currency) {
             },
             scales: {
                 x: {
-                    ticks: { color: '#a8c5b5', font: { size: 11 } },
-                    grid:  { color: 'rgba(40,98,58,0.15)' }
+                    ticks: { color: '#718096', font: { size: 11 } },
+                    grid:  { color: 'var(--border-color)' }
                 },
                 y: {
                     ticks: {
-                        color: '#a8c5b5',
+                        color: '#718096',
                         font: { size: 11 },
                         callback: v => parseFloat(v).toLocaleString('id-ID')
                     },
-                    grid: { color: 'rgba(40,98,58,0.15)' }
+                    grid: { color: 'var(--border-color)' }
                 }
             }
         }

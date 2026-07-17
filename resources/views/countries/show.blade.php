@@ -43,23 +43,23 @@
         <div class="card-custom">
             <div class="card-title">Informasi Negara</div>
             <table style="width: 100%; font-size: 14px;">
-                <tr style="border-bottom: 1px solid rgba(40,98,58,0.2);">
+                <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 8px 0; color: var(--text-secondary);">Kode</td>
                     <td style="padding: 8px 0; color: var(--text-primary);">{{ $country->code }}</td>
                 </tr>
-                <tr style="border-bottom: 1px solid rgba(40,98,58,0.2);">
+                <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 8px 0; color: var(--text-secondary);">Ibu Kota</td>
                     <td style="padding: 8px 0; color: var(--text-primary);">{{ $country->capital ?? '-' }}</td>
                 </tr>
-                <tr style="border-bottom: 1px solid rgba(40,98,58,0.2);">
+                <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 8px 0; color: var(--text-secondary);">Region</td>
                     <td style="padding: 8px 0; color: var(--text-primary);">{{ $country->region ?? '-' }}</td>
                 </tr>
-                <tr style="border-bottom: 1px solid rgba(40,98,58,0.2);">
+                <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 8px 0; color: var(--text-secondary);">Mata Uang</td>
                     <td style="padding: 8px 0; color: var(--text-primary);">{{ $country->currency_code }} — {{ $country->currency_name ?? '-' }}</td>
                 </tr>
-                <tr style="border-bottom: 1px solid rgba(40,98,58,0.2);">
+                <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 8px 0; color: var(--text-secondary);">Populasi</td>
                     <td style="padding: 8px 0; color: var(--text-primary);">
                         {{ $country->population ? number_format($country->population) : '-' }}
@@ -156,7 +156,7 @@
                             <small style="color: var(--text-secondary);">🌧 Cuaca (30%)</small>
                             <small style="color: var(--text-primary);">{{ $riskScore->weather_risk }}/100</small>
                         </div>
-                        <div style="background: rgba(40,98,58,0.2); border-radius: 4px; height: 6px;">
+                        <div style="background: var(--border-color); border-radius: 4px; height: 6px;">
                             <div style="background: #28a745; height: 6px; border-radius: 4px; width: {{ $riskScore->weather_risk }}%;"></div>
                         </div>
                         <small style="color: var(--text-secondary); font-size: 11px;">{{ $riskScore->weather_description }}</small>
@@ -167,7 +167,7 @@
                             <small style="color: var(--text-secondary);">📈 Inflasi (20%)</small>
                             <small style="color: var(--text-primary);">{{ $riskScore->inflation_risk }}/100</small>
                         </div>
-                        <div style="background: rgba(40,98,58,0.2); border-radius: 4px; height: 6px;">
+                        <div style="background: var(--border-color); border-radius: 4px; height: 6px;">
                             <div style="background: #ffc107; height: 6px; border-radius: 4px; width: {{ $riskScore->inflation_risk }}%;"></div>
                         </div>
                         <small style="color: var(--text-secondary); font-size: 11px;">{{ $riskScore->inflation_description }}</small>
@@ -178,7 +178,7 @@
                             <small style="color: var(--text-secondary);">📰 Berita (40%)</small>
                             <small style="color: var(--text-primary);">{{ $riskScore->news_risk }}/100</small>
                         </div>
-                        <div style="background: rgba(40,98,58,0.2); border-radius: 4px; height: 6px;">
+                        <div style="background: var(--border-color); border-radius: 4px; height: 6px;">
                             <div style="background: #dc3545; height: 6px; border-radius: 4px; width: {{ $riskScore->news_risk }}%;"></div>
                         </div>
                         <small style="color: var(--text-secondary); font-size: 11px;">{{ $riskScore->news_description }}</small>
@@ -189,7 +189,7 @@
                             <small style="color: var(--text-secondary);">💱 Kurs (10%)</small>
                             <small style="color: var(--text-primary);">{{ $riskScore->currency_risk }}/100</small>
                         </div>
-                        <div style="background: rgba(40,98,58,0.2); border-radius: 4px; height: 6px;">
+                        <div style="background: var(--border-color); border-radius: 4px; height: 6px;">
                             <div style="background: #17a2b8; height: 6px; border-radius: 4px; width: {{ $riskScore->currency_risk }}%;"></div>
                         </div>
                         <small style="color: var(--text-secondary); font-size: 11px;">{{ $riskScore->currency_description }}</small>
@@ -237,7 +237,7 @@
             <div class="card-title">📰 Berita Terkini</div>
             @if($news->isNotEmpty())
                 @foreach($news as $item)
-                <div style="border-bottom: 1px solid rgba(40,98,58,0.2); padding: 12px 0;">
+                <div style="border-bottom: 1px solid var(--border-color); padding: 12px 0;">
                     <div class="d-flex justify-content-between align-items-start">
                         <div style="flex: 1;">
                             <a href="{{ $item->url }}" target="_blank"

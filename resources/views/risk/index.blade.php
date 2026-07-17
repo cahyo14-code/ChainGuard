@@ -91,7 +91,7 @@
         font-size: 11px;
         padding: 2px 8px;
         border-radius: 10px;
-        background: rgba(40,98,58,0.2);
+        background: var(--border-color);
         color: var(--text-secondary);
         margin-right: 4px;
     }
@@ -296,7 +296,7 @@ new Chart(document.getElementById('doughnutChart'), {
         datasets: [{
             data: [{{ $highCount }}, {{ $mediumCount }}, {{ $lowCount }}],
             backgroundColor: ['#dc3545', '#ffc107', '#28a745'],
-            borderColor: '#1a3a2a',
+            borderColor: '#ffffff',
             borderWidth: 3,
             hoverOffset: 8,
         }]
@@ -308,10 +308,10 @@ new Chart(document.getElementById('doughnutChart'), {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#162830',
-                titleColor: '#fff',
-                bodyColor: '#a8c5b5',
-                borderColor: '#28623A',
+                backgroundColor: '#ffffff',
+                titleColor: '#2d3748',
+                bodyColor: '#718096',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
                 callbacks: {
                     label: ctx => ` ${ctx.label}: ${ctx.raw} negara`
@@ -364,27 +364,27 @@ new Chart(document.getElementById('top10Chart'), {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                labels: { color: '#a8c5b5', font: { size: 11 } }
+                labels: { color: '#718096', font: { size: 11 } }
             },
             tooltip: {
-                backgroundColor: '#162830',
-                titleColor: '#fff',
-                bodyColor: '#a8c5b5',
-                borderColor: '#28623A',
+                backgroundColor: '#ffffff',
+                titleColor: '#2d3748',
+                bodyColor: '#718096',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
             }
         },
         scales: {
             x: {
                 stacked: true,
-                ticks: { color: '#a8c5b5', font: { size: 10 }, maxRotation: 35 },
-                grid:  { color: 'rgba(40,98,58,0.12)' }
+                ticks: { color: '#718096', font: { size: 10 }, maxRotation: 35 },
+                grid:  { color: 'var(--border-color)' }
             },
             y: {
                 stacked: true,
                 max: 100,
-                ticks: { color: '#a8c5b5', font: { size: 11 } },
-                grid:  { color: 'rgba(40,98,58,0.12)' }
+                ticks: { color: '#718096', font: { size: 11 } },
+                grid:  { color: 'var(--border-color)' }
             }
         }
     }

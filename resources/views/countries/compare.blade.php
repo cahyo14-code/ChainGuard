@@ -33,7 +33,7 @@
 }
 .metric-row {
     display:flex; justify-content:space-between; align-items:center;
-    padding:9px 0; border-bottom:1px solid rgba(40,98,58,0.12); font-size:13px;
+    padding:9px 0; border-bottom:1px solid var(--border-color); font-size:13px;
 }
 .metric-row:last-child { border-bottom:none; }
 .metric-label { color:var(--text-secondary); font-size:12px; }
@@ -54,7 +54,7 @@
 }
 .placeholder-box i { font-size:40px; opacity:0.2; margin-bottom:12px; display:block; }
 .country-header-card {
-    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(40,98,58,0.12) 100%);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
     border: 2px solid var(--border-color); border-radius: 12px; padding: 18px;
     text-align:center;
 }
@@ -368,14 +368,14 @@ function renderRadar(a, b) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#a8c5b5', font: { size: 11 } } } },
+            plugins: { legend: { labels: { color: '#718096', font: { size: 11 } } } },
             scales: {
                 r: {
                     min: 0, max: 100,
                     ticks: { display: false },
-                    grid:  { color: 'rgba(40,98,58,0.25)' },
-                    angleLines: { color: 'rgba(40,98,58,0.25)' },
-                    pointLabels: { color: '#a8c5b5', font: { size: 11 } },
+                    grid:  { color: 'var(--border-color)' },
+                    angleLines: { color: 'var(--border-color)' },
+                    pointLabels: { color: '#718096', font: { size: 11 } },
                 }
             }
         }
@@ -486,10 +486,10 @@ function renderCurrencyTrend(a, b) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#a8c5b5', font: { size: 10 } } }, tooltip: tooltipStyle() },
+            plugins: { legend: { labels: { color: '#718096', font: { size: 10 } } }, tooltip: tooltipStyle() },
             scales: {
-                x:  { ticks: { color: '#a8c5b5', font: { size: 10 } }, grid: { color: 'rgba(40,98,58,0.12)' } },
-                yA: { position: 'left',  ticks: { color: '#3a8a52', font: { size: 10 } }, grid: { color: 'rgba(40,98,58,0.12)' } },
+                x:  { ticks: { color: '#718096', font: { size: 10 } }, grid: { color: 'var(--border-color)' } },
+                yA: { position: 'left',  ticks: { color: '#3a8a52', font: { size: 10 } }, grid: { color: 'var(--border-color)' } },
                 yB: { position: 'right', ticks: { color: '#4a90d9', font: { size: 10 } }, grid: { display: false } },
             }
         }
@@ -524,8 +524,8 @@ function renderNews(a, b) {
 // ── Chart options helper ───────────────────────────────────────
 function tooltipStyle() {
     return {
-        backgroundColor: '#162830', titleColor: '#fff', bodyColor: '#a8c5b5',
-        borderColor: '#28623A', borderWidth: 1,
+        backgroundColor: '#ffffff', titleColor: '#2d3748', bodyColor: '#718096',
+        borderColor: '#e2e8f0', borderWidth: 1,
     };
 }
 
@@ -533,12 +533,12 @@ function chartOpts() {
     return {
         responsive: true, maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#a8c5b5', font: { size: 10 } } },
+            legend: { labels: { color: '#718096', font: { size: 10 } } },
             tooltip: tooltipStyle(),
         },
         scales: {
-            x: { ticks: { color: '#a8c5b5', font: { size: 10 } }, grid: { color: 'rgba(40,98,58,0.12)' } },
-            y: { ticks: { color: '#a8c5b5', font: { size: 10 } }, grid: { color: 'rgba(40,98,58,0.12)' } },
+            x: { ticks: { color: '#718096', font: { size: 10 } }, grid: { color: 'var(--border-color)' } },
+            y: { ticks: { color: '#718096', font: { size: 10 } }, grid: { color: 'var(--border-color)' } },
         }
     };
 }

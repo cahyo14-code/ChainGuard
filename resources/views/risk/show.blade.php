@@ -6,7 +6,7 @@
 @push('styles')
 <style>
     .risk-hero {
-        background: linear-gradient(135deg, var(--bg-card) 0%, rgba(40,98,58,0.15) 100%);
+        background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 24px;
@@ -79,7 +79,7 @@
         display: flex;
         justify-content: space-between;
         padding: 8px 0;
-        border-bottom: 1px solid rgba(40,98,58,0.15);
+        border-bottom: 1px solid var(--border-color);
         font-size: 13px;
     }
     .info-row:last-child { border-bottom: none; }
@@ -111,7 +111,7 @@
     }
     .news-item {
         padding: 10px 0;
-        border-bottom: 1px solid rgba(40,98,58,0.15);
+        border-bottom: 1px solid var(--border-color);
     }
     .news-item:last-child { border-bottom: none; }
 </style>
@@ -310,7 +310,7 @@
             @endif
 
             @if($weather)
-            <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(40,98,58,0.2);">
+            <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border-color);">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Cuaca Terkini</div>
                 <div class="info-row">
                     <span class="key">Kondisi</span>
@@ -338,7 +338,7 @@
             @endif
 
             @if($currency)
-            <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(40,98,58,0.2);">
+            <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border-color);">
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Kurs Terkini</div>
                 <div class="info-row">
                     <span class="key">1 USD =</span>
@@ -427,15 +427,15 @@ new Chart(document.getElementById('radarChart'), {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#a8c5b5', font: { size: 12 } } }
+            legend: { labels: { color: '#718096', font: { size: 12 } } }
         },
         scales: {
             r: {
                 min: 0, max: 100,
                 ticks: { display: false },
-                grid:  { color: 'rgba(40,98,58,0.3)' },
-                angleLines: { color: 'rgba(40,98,58,0.3)' },
-                pointLabels: { color: '#a8c5b5', font: { size: 12 } },
+                grid:  { color: 'rgba(91,110,245,0.15)' },
+                angleLines: { color: 'rgba(91,110,245,0.15)' },
+                pointLabels: { color: '#718096', font: { size: 12 } },
             }
         }
     }
@@ -495,24 +495,24 @@ new Chart(trendCtx, {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#a8c5b5', font: { size: 11 } } },
+            legend: { labels: { color: '#718096', font: { size: 11 } } },
             tooltip: {
-                backgroundColor: '#162830',
-                titleColor: '#fff',
-                bodyColor: '#a8c5b5',
-                borderColor: '#28623A',
+                backgroundColor: '#ffffff',
+                titleColor: '#2d3748',
+                bodyColor: '#718096',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
             }
         },
         scales: {
             x: {
-                ticks: { color: '#a8c5b5', font: { size: 10 } },
-                grid:  { color: 'rgba(40,98,58,0.12)' }
+                ticks: { color: '#718096', font: { size: 10 } },
+                grid:  { color: 'var(--border-color)' }
             },
             y: {
                 min: 0, max: 100,
-                ticks: { color: '#a8c5b5', font: { size: 11 } },
-                grid:  { color: 'rgba(40,98,58,0.12)' }
+                ticks: { color: '#718096', font: { size: 11 } },
+                grid:  { color: 'var(--border-color)' }
             }
         }
     }
@@ -528,7 +528,7 @@ new Chart(document.getElementById('sentimentChart'), {
         datasets: [{
             data: [{{ $positiveNews }}, {{ $neutralNews }}, {{ $negativeNews }}],
             backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
-            borderColor: '#1a3a2a',
+            borderColor: '#ffffff',
             borderWidth: 3,
             hoverOffset: 6,
         }]
@@ -540,10 +540,10 @@ new Chart(document.getElementById('sentimentChart'), {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#162830',
-                titleColor: '#fff',
-                bodyColor: '#a8c5b5',
-                borderColor: '#28623A',
+                backgroundColor: '#ffffff',
+                titleColor: '#2d3748',
+                bodyColor: '#718096',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
                 callbacks: {
                     label: ctx => ` ${ctx.label}: ${ctx.raw} berita`

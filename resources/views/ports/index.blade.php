@@ -64,7 +64,7 @@
     .form-select-custom option { background: var(--bg-secondary); }
     .port-list-item {
         padding: 8px 0;
-        border-bottom: 1px solid rgba(40,98,58,0.15);
+        border-bottom: 1px solid var(--border-color);
         font-size: 12px;
         cursor: pointer;
         transition: all 0.15s;
@@ -80,7 +80,7 @@
         margin-right: 5px;
     }
     .port-count-badge {
-        background: rgba(40,98,58,0.3);
+        background: rgba(91,110,245,0.15);
         color: var(--accent-light);
         font-size: 10px;
         padding: 2px 7px;
@@ -234,7 +234,7 @@ const map = L.map('portMap', {
 });
 
 // Tile layer OpenStreetMap dengan warna gelap
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> · © <a href="https://carto.com/">CARTO</a>',
     maxZoom: 18,
 }).addTo(map);
@@ -348,7 +348,7 @@ function applyFilters(q, country) {
     container.innerHTML = filtered.slice(0, 80).map(port => `
         <div class="port-list-item"
              onclick="flyToPort(${port.lat}, ${port.lng}, '${(port.name || '').replace(/'/g, "\\'")}')"
-             style="padding:8px 0; border-bottom:1px solid rgba(40,98,58,0.15); font-size:12px; cursor:pointer;">
+             style="padding:8px 0; border-bottom:1px solid var(--border-color); font-size:12px; cursor:pointer;">
             ${port.flag_url ? `<img class="flag-xs" src="${port.flag_url}" style="width:18px;height:11px;object-fit:cover;border-radius:2px;margin-right:5px;">` : ''}
             <strong style="color:var(--text-primary)">${port.name}</strong>
             ${port.city ? `<span style="color:var(--text-secondary)"> — ${port.city}</span>` : ''}

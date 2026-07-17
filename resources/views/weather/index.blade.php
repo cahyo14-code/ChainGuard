@@ -72,7 +72,7 @@
     }
     .chart-container { position: relative; height: 180px; }
     .weather-table-row:hover td {
-        background: rgba(40,98,58,0.08) !important;
+        background: #f8fafc !important;
     }
     .flag-img {
         width: 22px; height: 14px;
@@ -309,7 +309,7 @@ const map = L.map('weatherMap', {
     preferCanvas: true,
 });
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> · © <a href="https://carto.com/">CARTO</a>',
     maxZoom: 18,
 }).addTo(map);
@@ -441,10 +441,10 @@ new Chart(document.getElementById('conditionChart'), {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#162830',
-                titleColor: '#fff',
-                bodyColor: '#a8c5b5',
-                borderColor: '#28623A',
+                backgroundColor: '#ffffff',
+                titleColor: '#2d3748',
+                bodyColor: '#718096',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
                 callbacks: {
                     label: ctx => ` ${ctx.raw} negara`
@@ -453,11 +453,11 @@ new Chart(document.getElementById('conditionChart'), {
         },
         scales: {
             x: {
-                ticks: { color: '#a8c5b5', font: { size: 10 } },
-                grid:  { color: 'rgba(40,98,58,0.12)' }
+                ticks: { color: '#718096', font: { size: 10 } },
+                grid:  { color: 'var(--border-color)' }
             },
             y: {
-                ticks: { color: '#a8c5b5', font: { size: 10 } },
+                ticks: { color: '#718096', font: { size: 10 } },
                 grid:  { display: false }
             }
         }
