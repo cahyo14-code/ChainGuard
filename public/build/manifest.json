@@ -11,6 +11,15 @@
     "file": "assets/marker-icon-hN30_KVU.png",
     "src": "node_modules/leaflet/dist/images/marker-icon.png"
   },
+  "resources/css/app.css": {
+    "file": "assets/app-BPWbnSCU.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
   "resources/js/app.js": {
     "file": "assets/app-CRuq7FXk.js",
     "name": "app",
@@ -23,15 +32,6 @@
       "assets/layers-BWBAp2CZ.png",
       "assets/layers-2x-Bpkbi35X.png",
       "assets/marker-icon-hN30_KVU.png"
-    ]
-  },
-  "resources/sass/app.scss": {
-    "file": "assets/app-CpEEPCb_.css",
-    "src": "resources/sass/app.scss",
-    "isEntry": true,
-    "name": "app",
-    "names": [
-      "app.css"
     ]
   }
 }
