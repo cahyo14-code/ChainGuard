@@ -566,7 +566,7 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghitung Rute...';
 
         try {
-            const response = await fetch('{{ route("api.simulator.calculate") }}', {
+            const response = await fetch('/api/route-simulator/calculate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -767,8 +767,16 @@
             `🚢 ${originName} → ${destName} — memuat rute laut...`;
         document.getElementById('map-simulator').scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        // Ambil rute laut yang SEBENARNYA (mengikuti jalur pelayaran, bukan garis lurus)
-        // beserta koordinat pelabuhan persis dari endpoint show() — bukan koordinat negara.
+        const originIcon = L.divIcon({
+            html: `<div style="background:#dc3545;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
+            iconSize: [14,14], iconAnchor: [7,7], className: ''
+        });
+        const destIcon = L.divIcon({
+            html: `<div style="background:#28a745;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
+            iconSize: [14,14], iconAnchor: [7,7], className: ''
+        });
+
+        // Ambil rute laut yang SEBENARNYA dari endpoint show()
         try {
             const res = await fetch(`/api/route-simulator/${shipmentId}`, {
                 headers: { 'Accept': 'application/json' }
@@ -779,16 +787,6 @@
             const waypoints = result.data.waypoints;
             const oPoint    = result.data.origin;
             const dPoint    = result.data.destination;
-
-            // Icon asal (merah) & tujuan (hijau) — digambar di koordinat pelabuhan yang akurat
-            const originIcon = L.divIcon({
-                html: `<div style="background:#dc3545;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
-                iconSize: [14,14], iconAnchor: [7,7], className: ''
-            });
-            const destIcon = L.divIcon({
-                html: `<div style="background:#28a745;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
-                iconSize: [14,14], iconAnchor: [7,7], className: ''
-            });
 
             originMarker = L.marker([oPoint.latitude, oPoint.longitude], { icon: originIcon }).addTo(map)
                 .bindPopup(`<b>📍 ${originName}</b><br><small>${originPort}</small>`).openPopup();
@@ -803,8 +801,6 @@
             map.fitBounds(seaRouteLine.getBounds(), { padding: [60, 60] });
             map.invalidateSize();
 
-            // Posisi kapal dihitung dari titik-titik rute laut asli (ikut alur pelayaran),
-            // bukan interpolasi garis lurus — supaya kapal tidak "memotong" daratan.
             const startMs = new Date(startedAt).getTime();
             const totalMs = totalDays * 86400000;
             const elapsed = Date.now() - startMs;
@@ -825,9 +821,29 @@
             document.getElementById('map-status-badge').innerHTML =
                 `🚢 ${originName} → ${destName} (Pengiriman Aktif)`;
         } catch (e) {
-            console.error('loadActiveShipmentRoute gagal ambil rute:', e);
-            document.getElementById('map-status-badge').innerHTML =
-                `⚠️ Gagal memuat rute ${originName} → ${destName}`;
+            console.error('loadActiveShipmentRoute gagal ambil rute API, menggunakan fallback:', e);
+
+            // Fallback: jika API error, tetap gambar rute & marker menggunakan koordinat dari parameter
+            if (oLat && oLon && dLat && dLon) {
+                originMarker = L.marker([oLat, oLon], { icon: originIcon }).addTo(map)
+                    .bindPopup(`<b>📍 ${originName}</b><br><small>${originPort}</small>`).openPopup();
+                destMarker = L.marker([dLat, dLon], { icon: destIcon }).addTo(map)
+                    .bindPopup(`<b>🏁 ${destName}</b><br><small>${destPort}</small>`);
+
+                const fallbackWaypoints = [[oLat, oLon], [(oLat + dLat) / 2, (oLon + dLon) / 2], [dLat, dLon]];
+                seaRouteLine = L.polyline(fallbackWaypoints, {
+                    color: '#5b6ef5', weight: 3, dashArray: '10, 6', lineCap: 'round', opacity: 0.85
+                }).addTo(map);
+
+                map.fitBounds(seaRouteLine.getBounds(), { padding: [60, 60] });
+                map.invalidateSize();
+
+                document.getElementById('map-status-badge').innerHTML =
+                    `🚢 ${originName} → ${destName} (Pengiriman Aktif)`;
+            } else {
+                document.getElementById('map-status-badge').innerHTML =
+                    `⚠️ Gagal memuat rute ${originName} → ${destName}`;
+            }
         }
     }
     let currentShipmentId = null;

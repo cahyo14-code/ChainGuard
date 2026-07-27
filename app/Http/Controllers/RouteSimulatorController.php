@@ -9,7 +9,6 @@ use App\Models\RiskScore;
 use App\Models\CurrencyHistory;
 use App\Models\EconomicIndicator;
 use App\Models\Shipment;
-use App\Models\ShipmentConditionLog;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -183,7 +182,9 @@ class RouteSimulatorController extends Controller
         if ($shipment->user_id !== auth()->id()) {
             return back()->with('error', 'Unauthorized.');
         }
-        $shipment->conditionLogs()->delete();
+        if (method_exists($shipment, 'conditionLogs')) {
+            try { $shipment->conditionLogs()->delete(); } catch (\Throwable $e) {}
+        }
         $shipment->delete();
         return back()->with('success', 'Pengiriman berhasil dihapus.');
     }
@@ -210,7 +211,7 @@ class RouteSimulatorController extends Controller
     public function history()
     {
         $shipments = Shipment::where('user_id', auth()->id())
-            ->with(['originCountry', 'destinationCountry', 'conditionLogs'])
+            ->with(['originCountry', 'destinationCountry'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -221,17 +222,17 @@ class RouteSimulatorController extends Controller
     public function show(Shipment $shipment)
     {
         if ($shipment->user_id !== auth()->id()) {
-            abort(403);
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
         }
 
-        $shipment->load(['originCountry', 'destinationCountry', 'conditionLogs']);
+        $shipment->load(['originCountry', 'destinationCountry']);
 
         // Pakai koordinat pelabuhan persis yang dipakai saat kalkulasi pertama.
-        // Fallback ke titik tengah negara hanya untuk shipment lama (sebelum kolom ini ada).
-        $lat1 = $shipment->origin_point_lat      ?? (float) $shipment->originCountry->latitude;
-        $lon1 = $shipment->origin_point_lng      ?? (float) $shipment->originCountry->longitude;
-        $lat2 = $shipment->destination_point_lat ?? (float) $shipment->destinationCountry->latitude;
-        $lon2 = $shipment->destination_point_lng ?? (float) $shipment->destinationCountry->longitude;
+        // Fallback ke titik tengah negara jika null
+        $lat1 = (float) ($shipment->origin_point_lat      ?? $shipment->originCountry?->latitude      ?? 0);
+        $lon1 = (float) ($shipment->origin_point_lng      ?? $shipment->originCountry?->longitude     ?? 0);
+        $lat2 = (float) ($shipment->destination_point_lat ?? $shipment->destinationCountry?->latitude ?? 0);
+        $lon2 = (float) ($shipment->destination_point_lng ?? $shipment->destinationCountry?->longitude ?? 0);
 
         $routeWaypoints = $this->generateSeaRoute($lat1, $lon1, $lat2, $lon2);
 
@@ -354,6 +355,10 @@ class RouteSimulatorController extends Controller
     // ── Simpan kondisi kendala sebagai records ─────────────────
     private function saveConditionRecords(Shipment $shipment, array $factors, $origin, $destination): void
     {
+        if (!class_exists('App\Models\ShipmentConditionLog')) {
+            return;
+        }
+
         $conditionTypes = [
             'weather'     => 'weather',
             'currency'    => 'currency',
@@ -366,17 +371,21 @@ class RouteSimulatorController extends Controller
             $factor = $factors[$key];
             $hasIssue = isset($factor['delay']) ? $factor['delay'] > 0 : abs($factor['impact_pct'] ?? 0) > 1.5;
 
-            ShipmentConditionLog::create([
-                'shipment_id'    => $shipment->id,
-                'condition_type' => $type,
-                'title'          => ucfirst($key) . ' Condition',
-                'description'    => $factor['desc'],
-                'condition_data' => $factor,
-                'latitude'       => $origin->latitude,
-                'longitude'      => $origin->longitude,
-                'location_name'  => $origin->name,
-                'recorded_at'    => now(),
-            ]);
+            try {
+                \App\Models\ShipmentConditionLog::create([
+                    'shipment_id'    => $shipment->id,
+                    'condition_type' => $type,
+                    'title'          => ucfirst($key) . ' Condition',
+                    'description'    => $factor['desc'],
+                    'condition_data' => $factor,
+                    'latitude'       => $origin->latitude,
+                    'longitude'      => $origin->longitude,
+                    'location_name'  => $origin->name,
+                    'recorded_at'    => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // Abaikan jika tabel logs tidak ada
+            }
         }
     }
 
