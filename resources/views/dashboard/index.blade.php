@@ -47,7 +47,8 @@
             <div class="page-header">
                 <h2 style="font-size: 16px;">🔴 Top 10 Negara Risiko Tertinggi</h2>
             </div>
-            <table class="table table-custom">
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table class="table table-custom" style="min-width: 600px;">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -64,7 +65,7 @@
                     @foreach($topRiskCountries as $index => $risk)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>
+                        <td style="white-space: nowrap;">
                             <a href="{{ route('countries.show', $risk->country->code) }}"
                                style="color: var(--accent-light); text-decoration: none;">
                                 {{ $risk->country->name ?? '-' }}
@@ -88,6 +89,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 
