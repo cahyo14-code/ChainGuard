@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\WeatherController;
@@ -17,6 +18,34 @@ use App\Http\Controllers\Api\RiskApiController;
 use App\Http\Controllers\Api\NewsApiController;
 use App\Http\Controllers\Api\PortApiController;
 use App\Http\Controllers\Api\CompareApiController;
+
+// Route rahasia untuk migrasi & seed database Clever Cloud otomatis (Canggih & Otomatis Konek DB)
+Route::get('/run-migrate-force', function () {
+    try {
+        if (env('MYSQL_ADDON_HOST')) {
+            config([
+                'database.default' => 'mysql',
+                'database.connections.mysql.host' => env('MYSQL_ADDON_HOST'),
+                'database.connections.mysql.port' => env('MYSQL_ADDON_PORT', '3306'),
+                'database.connections.mysql.database' => env('MYSQL_ADDON_DB'),
+                'database.connections.mysql.username' => env('MYSQL_ADDON_USER'),
+                'database.connections.mysql.password' => env('MYSQL_ADDON_PASSWORD'),
+            ]);
+        }
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return '<div style="font-family:sans-serif; text-align:center; padding:50px;">
+                    <h1 style="color:#28a745;">✅ SUKSES! Database & Tabel di Clever Cloud Berhasil Dibuat!</h1>
+                    <p style="font-size:18px;">Semua tabel dan data awal sudah aktif di cloud.</p>
+                    <a href="/login" style="background:#0d6efd; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold;">👉 Klik di sini untuk Halaman Login</a>
+                </div>';
+    } catch (\Throwable $e) {
+        return '<div style="font-family:sans-serif; text-align:center; padding:50px; color:#dc3545;">
+                    <h1>❌ Detail Gagal Migrasi Database</h1>
+                    <p style="font-size:16px;">Error: ' . htmlspecialchars($e->getMessage()) . '</p>
+                </div>';
+    }
+});
 
 // Auth routes
 Auth::routes();
