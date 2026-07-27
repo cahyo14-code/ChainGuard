@@ -73,6 +73,14 @@
 
             <p class="nav-section-title">Tools</p>
 
+            @unless(auth()->user() && auth()->user()->isAdmin())
+            <div class="nav-item-custom">
+                <a href="{{ route('simulator.index') }}" class="nav-link-custom {{ request()->routeIs('simulator.*') ? 'active' : '' }}">
+                    <i class="fas fa-ship"></i> Route Simulator
+                </a>
+            </div>
+            @endunless
+
             <div class="nav-item-custom">
                 <a href="{{ route('watchlist.index') }}" class="nav-link-custom {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
                     <i class="fas fa-star"></i> Watchlist
@@ -85,7 +93,7 @@
                 </a>
             </div>
 
-            @if(auth()->user())
+            @if(auth()->user() && auth()->user()->isAdmin())
             <p class="nav-section-title">Admin</p>
             <div class="nav-item-custom">
                 <a href="{{ route('admin.index') }}" class="nav-link-custom {{ request()->routeIs('admin.*') ? 'active' : '' }}">
@@ -117,6 +125,13 @@
                     <span style="font-size:13px; font-weight:500; color:var(--text-primary);">
                         {{ auth()->user()->name ?? 'Guest' }}
                     </span>
+                    @if(auth()->user())
+                        @if(auth()->user()->isAdmin())
+                            <span class="badge" style="background: rgba(220,53,69,0.15); color: #dc3545; border: 1px solid #dc3545; font-size: 11px; padding: 3px 8px; border-radius: 6px;">Admin</span>
+                        @else
+                            <span class="badge" style="background: rgba(23,162,184,0.15); color: #17a2b8; border: 1px solid #17a2b8; font-size: 11px; padding: 3px 8px; border-radius: 6px;">User</span>
+                        @endif
+                    @endif
                 </div>
 
                 <!-- Logout -->
@@ -133,6 +148,16 @@
 
         <!-- Content -->
         <div class="content-area">
+            @if(session('error'))
+                <div style="background: rgba(220,53,69,0.15); border: 1px solid #dc3545; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #dc3545; font-size: 13px;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> {{ session('error') }}
+                </div>
+            @endif
+            @if(session('success'))
+                <div style="background: rgba(40,167,69,0.15); border: 1px solid #28a745; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #28a745; font-size: 13px;">
+                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+                </div>
+            @endif
             @yield('content')
         </div>
 

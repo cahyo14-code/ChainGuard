@@ -10,6 +10,7 @@ use App\Http\Controllers\PortController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RouteSimulatorController;
 use App\Http\Controllers\Api\CountryApiController;
 use App\Http\Controllers\Api\CurrencyApiController;
 use App\Http\Controllers\Api\RiskApiController;
@@ -47,20 +48,31 @@ Route::middleware(['auth'])->group(function () {
     // Ports
     Route::get('/ports', [PortController::class, 'index'])->name('ports.index');
 
+    // Route Simulator
+    Route::get('/route-simulator', [RouteSimulatorController::class, 'index'])->name('simulator.index');
+    Route::get('/route-simulator/history', [RouteSimulatorController::class, 'history'])->name('simulator.history');
+    Route::delete('/route-simulator/{shipment}', [RouteSimulatorController::class, 'destroy'])->name('simulator.destroy');
+    Route::post('/api/route-simulator/calculate', [RouteSimulatorController::class, 'calculate'])->name('api.simulator.calculate');
+    Route::get('/api/route-simulator/ports/{countryId}', [RouteSimulatorController::class, 'portsByCountry'])->name('api.simulator.ports');
+    Route::post('/api/route-simulator/{shipment}/complete', [RouteSimulatorController::class, 'complete'])->name('api.simulator.complete');
+    Route::get('/api/route-simulator/{shipment}', [RouteSimulatorController::class, 'show'])->name('api.simulator.show');
+
     // Watchlist
     Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
     Route::post('/watchlist/{country}', [WatchlistController::class, 'store'])->name('watchlist.store');
     Route::delete('/watchlist/{country}', [WatchlistController::class, 'destroy'])->name('watchlist.destroy');
 
-    // Admin
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/admin/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
-    Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
-    Route::post('/admin/articles', [AdminController::class, 'storeArticle'])->name('admin.articles.store');
-    Route::delete('/admin/articles/{article}', [AdminController::class, 'destroyArticle'])->name('admin.articles.destroy');
-    Route::patch('/admin/articles/{article}/status', [AdminController::class, 'updateArticleStatus'])->name('admin.articles.status');
-    Route::get('/admin/data-status', [AdminController::class, 'dataStatus'])->name('admin.data.status');
-    Route::post('/admin/refresh', [AdminController::class, 'refresh'])->name('admin.refresh');
+    // Admin (Harus role Admin)
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::post('/admin/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
+        Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+        Route::post('/admin/articles', [AdminController::class, 'storeArticle'])->name('admin.articles.store');
+        Route::delete('/admin/articles/{article}', [AdminController::class, 'destroyArticle'])->name('admin.articles.destroy');
+        Route::patch('/admin/articles/{article}/status', [AdminController::class, 'updateArticleStatus'])->name('admin.articles.status');
+        Route::get('/admin/data-status', [AdminController::class, 'dataStatus'])->name('admin.data.status');
+        Route::post('/admin/refresh', [AdminController::class, 'refresh'])->name('admin.refresh');
+    });
 
     // =========================================================
     // REST API Routes (JSON — dipakai oleh AJAX & Chart.js)

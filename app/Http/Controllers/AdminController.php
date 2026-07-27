@@ -148,15 +148,26 @@ class AdminController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'role'     => 'nullable|in:admin,user',
         ]);
 
-        User::create([
+        $role = $request->input('role', 'user');
+
+        $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $role,
         ]);
 
-        return back()->with('success', 'User berhasil ditambahkan.');
+        if (method_exists($user, 'assignRole')) {
+            try {
+                \Spatie\Permission\Models\Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+                $user->assignRole($role);
+            } catch (\Throwable $e) {}
+        }
+
+        return back()->with('success', 'User berhasil ditambahkan dengan role ' . $role . '.');
     }
 
     public function destroyUser(User $user)

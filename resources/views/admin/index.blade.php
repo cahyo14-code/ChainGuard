@@ -291,6 +291,7 @@
                             <th>#</th>
                             <th>Nama</th>
                             <th>Email</th>
+                            <th>Role</th>
                             <th>Terdaftar</th>
                             <th style="text-align:center">Aksi</th>
                         </tr>
@@ -307,6 +308,13 @@
                                 @endif
                             </td>
                             <td style="color:var(--text-secondary)">{{ $user->email }}</td>
+                            <td>
+                                @if($user->isAdmin())
+                                    <span style="background: rgba(220,53,69,0.15); color: #dc3545; border: 1px solid #dc3545; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500;">Admin</span>
+                                @else
+                                    <span style="background: rgba(23,162,184,0.15); color: #17a2b8; border: 1px solid #17a2b8; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500;">User</span>
+                                @endif
+                            </td>
                             <td style="color:var(--text-secondary)">{{ $user->created_at->format('d M Y') }}</td>
                             <td style="text-align:center">
                                 @if($user->id !== auth()->id())
@@ -348,6 +356,13 @@
                         <label style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px">Password</label>
                         <input type="password" name="password" class="form-input" required placeholder="Min. 6 karakter">
                         @error('password')<small style="color:#dc3545">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px">Role</label>
+                        <select name="role" class="form-input" style="width: 100%; font-size: 13px;">
+                            <option value="user">User (Pengguna Biasa)</option>
+                            <option value="admin">Admin (Akses Penuh)</option>
+                        </select>
                     </div>
                     <button type="submit" class="btn-sm-accent w-100" style="padding:10px">
                         <i class="fas fa-user-plus"></i> Tambah User

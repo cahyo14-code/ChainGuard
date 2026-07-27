@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -47,6 +48,22 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Cek apakah user memiliki role admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || (method_exists($this, 'hasRole') && $this->hasRole('admin'));
+    }
+
+    /**
+     * Cek apakah user memiliki role pengguna biasa
+     */
+    public function isUser(): bool
+    {
+        return $this->role === 'user' || (method_exists($this, 'hasRole') && $this->hasRole('user'));
+    }
+
     // 1 user punya banyak watchlist
     public function watchlists()
     {
@@ -59,3 +76,4 @@ class User extends Authenticatable
         return $this->hasMany(Article::class);
     }
 }
+
